@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        table{
+            border: 1px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <form action="/excel" method="post">
+        <input type="file" id="fileInput">
+        <textarea name="hiddendata" id="hiddendata" cols="30" rows="10" hidden></textarea>
+        <button type="submit">Submit</button>
+    </form>
+    <form action="/download" method="post">
+        <button type="submit">Download</button>
+    </form>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.readAsArrayBuffer(file);
+            reader.onload = () => {
+                const data = new Uint8Array(reader.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const sheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[sheetName];
+                const excelData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                const js=JSON.stringify(excelData);
+                console.log(js);
+                console.log(JSON.parse(js));
+                document.getElementById("hiddendata").innerHTML=js;
+            };
+        });
+       
+
+    </script>
+
+</body>
+
+</html>
